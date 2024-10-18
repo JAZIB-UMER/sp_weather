@@ -9,14 +9,17 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../view_model/video_provider.dart';
 
 class HomeView extends StatefulWidget {
-  bool isConnected = true;
+  final bool isConnected; // Properly declare final to avoid mutation
 
-  HomeView({super.key, isConnected}); // Variable to track internet connectivity
+  // Initialize isConnected properly inside the constructor
+  HomeView({super.key, this.isConnected = true});
+
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView> {
+  late WebViewController _twitchWebViewController;
   late WebViewController _webViewController;
   late bool isConnectedLocal;
   late String backgroundImage;
@@ -25,55 +28,69 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
 
-    // Assign a value to backgroundImage based on some condition
-    if (widget.isConnected) {
-      isConnectedLocal = true;
-    } else {
-      isConnectedLocal = false; // Example path
-    }
-
-    // Initialize WebView controller
+    isConnectedLocal = widget.isConnected;
     _setBackgroundImage();
+    _initializeWebViewControllers();
+  }
 
-    // Initialize WebView controller
+  // Initialize the WebView Controllers
+  void _initializeWebViewControllers() {
+    _twitchWebViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(_buildWebViewNavigationDelegate())
+      ..loadRequest(Uri.parse(
+          'https://player.twitch.tv/?channel=superiorweather&parent=localhost'));
+
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
-            debugPrint('WebView is loading (progress: $progress%)');
-          },
-          onPageStarted: (String url) {
-            debugPrint('Page started loading: $url');
-          },
-          onPageFinished: (String url) {
-            debugPrint('Page finished loading: $url');
-          },
-          onWebResourceError: (WebResourceError error) {
-            debugPrint('Error loading page: ${error.description}');
-          },
-        ),
-      )
+      ..setNavigationDelegate(_buildWebViewNavigationDelegate())
       ..loadRequest(Uri.parse(
           'https://live365.com/embed/player.html?station=a06810&s=sm&m=dark'));
   }
 
+  // Set background image based on time of day
   void _setBackgroundImage() {
-    // Get current hour
     int currentHour = DateTime.now().hour;
-
-    // Set background image based on time of day
     backgroundImage = (currentHour >= 6 && currentHour < 18)
-        ? 'assets/images/day_background.jpg' // Daytime image
-        : 'assets/images/background_image.png'; // Nighttime image
+        ? 'assets/images/day_background.jpg'
+        : 'assets/images/background_image.png';
+  }
+
+  // Common WebView Navigation Delegate
+  NavigationDelegate _buildWebViewNavigationDelegate() {
+    return NavigationDelegate(
+      onProgress: (int progress) {
+        debugPrint('WebView is loading (progress: $progress%)');
+      },
+      onPageStarted: (String url) {
+        debugPrint('Page started loading: $url');
+      },
+      onPageFinished: (String url) {
+        debugPrint('Page finished loading: $url');
+      },
+      onWebResourceError: (WebResourceError error) {
+        debugPrint('Error loading page: ${error.description}');
+      },
+    );
+  }
+
+  // Embed Twitch Stream Widget
+  Widget buildTwitchStream() {
+    return SizedBox(
+      height: 300,
+      child: WebViewWidget(controller: _twitchWebViewController),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final weatherProvider = Provider.of<WeatherProvider>(context);
-    final List<String> videoUrls = [
-      'https://www.youtube.com/watch?v=_5TiTfuvotc&pp=ygUOd2VhdGhlciBhbGVydHM%3D',
-      'https://www.youtube.com/watch?v=5UFTaluS7Gc&pp=ygUOd2VhdGhlciBhbGVydHM%3D',
+    final videoUrls = [
+      'https://www.youtube.com/watch?v=EoZV2JvIiOo',
+      'https://www.youtube.com/watch?v=xmpu_VHst_4',
+      'https://www.youtube.com/watch?v=ZV3R5eR06cY',
+      'https://www.youtube.com/watch?v=voVe7F8rRkU',
+      'https://www.youtube.com/watch?v=ni0flPUmZjA',
     ];
 
     final width = MediaQuery.of(context).size.width;
@@ -82,109 +99,86 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: ChangeNotifierProvider(
-        create: (_) => VideoProvider(videoUrls), // Initialize VideoProvider
+        create: (_) => VideoProvider(videoUrls),
         child: Stack(
           children: [
-            // Background Image
             Container(
-              width: 807.12,
-              height: 1211,
+              width: double.infinity,
+              height: height,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(backgroundImage),
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            // Main Content
             isConnectedLocal
                 ? weatherProvider.isLoading == false
                     ? SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // TOP BAR
-                              buildTopBar(height, context),
-
-                              // Watch Live and Listen Live section
-                              Container(
-                                height: 1,
-                                width: width,
-                                decoration:
-                                    const BoxDecoration(color: Colors.white),
-                              ),
-                              buildLiveWatchAndListenRow(
-                                  context, _webViewController),
-                              Container(
-                                height: 1,
-                                width: width,
-                                decoration:
-                                    const BoxDecoration(color: Colors.white),
-                              ),
-                              const SizedBox(height: 10),
-
-                              // Video Slider Section
-                              const SizedBox(height: 20),
-
-                              const SizedBox(height: 10),
-
-                              // City and Weather Info with shimmer effect
-                              const SizedBox(height: 20),
-                              buildWeatherInfoWithShimmer(weatherProvider),
-
-                              const SizedBox(height: 20),
-                              // Hourly forecast section
-
-                              WeatherCard(
-                                weatherProvider: weatherProvider,
-                              ),
-                              const SizedBox(height: 20),
-                              buildHourlyForecast(weatherProvider),
-
-                              const SizedBox(height: 10),
-                              buildSectionTitle('Video Slider'),
-                              SizedBox(
-                                height: 200, // Control height for slider
-                                child: VideoSlider(),
-                              ),
-                              const SizedBox(height: 10),
-                              buildSectionTitle('Live Map'),
-                              buildLiveRadar(
-                                  'Go to Map',
-                                  'assets/images/world-wind-map.png',
-                                  context, onTap: () {
-                                Navigator.pushNamed(
-                                    context, RoutesName.mapView);
-                              }),
-
-                              const SizedBox(height: 10),
-                              buildSectionTitle('Live Radar'),
-                              buildLiveRadar(
-                                  'Go to live Radar',
-                                  'assets/images/radar.jpg',
-                                  context, onTap: () {
-                                Navigator.pushNamed(
-                                    context, RoutesName.radarView);
-                              }),
-                              const SizedBox(height: 10),
-                              buildSectionTitle('Weather Forecast'),
-                              buildLiveRadar(
-                                  'Go to Live Forecast View',
-                                  'assets/images/dailyForecast.jpg',
-                                  context, onTap: () {
-                                Navigator.pushNamed(
-                                    context, RoutesName.dailyForecast);
-                              }),
-                            ],
-                          ),
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildTopBar(height, context),
+                            const SizedBox(height: 10),
+                            Container(
+                              height: 1,
+                              width: width,
+                              decoration:
+                                  const BoxDecoration(color: Colors.white),
+                            ),
+                            buildLiveWatchAndListenRow(
+                                context, _webViewController),
+                            Container(
+                              height: 1,
+                              width: width,
+                              decoration:
+                                  const BoxDecoration(color: Colors.white),
+                            ),
+                            const SizedBox(height: 10),
+                            buildWeatherInfoWithShimmer(weatherProvider),
+                            const SizedBox(height: 10),
+                            WeatherCard(weatherProvider: weatherProvider),
+                            buildHourlyForecast(weatherProvider),
+                            const SizedBox(height: 20),
+                            buildSectionTitle('Superior Weather Live'),
+                            const SizedBox(height: 10),
+                            buildTwitchStream(),
+                            const SizedBox(height: 20),
+                            buildSectionTitle('Video Forecast'),
+                            const SizedBox(height: 10),
+                            buildLiveRadar(
+                                'Go to Live Forecast View',
+                                'assets/images/dailyForecast.jpg',
+                                context, onTap: () {
+                              Navigator.pushNamed(
+                                  context, RoutesName.dailyForecast);
+                            }),
+                            const SizedBox(height: 20),
+                            buildSectionTitle('Hete°rology'),
+                            SizedBox(
+                              height: 300,
+                              child: VideoSlider(),
+                            ),
+                            const SizedBox(height: 20),
+                            buildSectionTitle('Live Map'),
+                            buildLiveRadar(
+                                'Go to Map',
+                                'assets/images/world-wind-map.png',
+                                context, onTap: () {
+                              Navigator.pushNamed(context, RoutesName.mapView);
+                            }),
+                            const SizedBox(height: 20),
+                            buildSectionTitle('Live Radar'),
+                            buildLiveRadar('Go to live Radar',
+                                'assets/images/radar.jpg', context, onTap: () {
+                              Navigator.pushNamed(
+                                  context, RoutesName.radarView);
+                            }),
+                          ],
                         ),
                       )
-                    : const Center(
-                        child:
-                            CircularProgressIndicator(), // Show loading spinner
-                      )
+                    : const Center(child: CircularProgressIndicator())
                 : const Center(
                     child: Text(
                       'No Internet Connection',
@@ -198,5 +192,12 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _twitchWebViewController.clearCache();
+    _webViewController.clearCache();
+    super.dispose();
   }
 }

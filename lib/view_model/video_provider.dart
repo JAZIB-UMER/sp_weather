@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class VideoProvider with ChangeNotifier {
   final List<String> videoUrls;
-  List<VideoPlayerController> videoControllers = [];
+  List<YoutubePlayerController> videoControllers = [];
   int currentVideoIndex = 0;
 
   VideoProvider(this.videoUrls) {
@@ -12,13 +12,17 @@ class VideoProvider with ChangeNotifier {
 
   void _initializeControllers() {
     for (var url in videoUrls) {
-      VideoPlayerController controller =
-          VideoPlayerController.networkUrl(url as Uri)
-            ..initialize().then((_) {
-              notifyListeners();
-            });
+      YoutubePlayerController controller = YoutubePlayerController(
+        initialVideoId:
+            YoutubePlayer.convertUrlToId(url)!, // Extract YouTube video ID
+        flags: YoutubePlayerFlags(
+          autoPlay: false,
+          mute: false,
+        ),
+      );
       videoControllers.add(controller);
     }
+    notifyListeners(); // Notify after controllers are created
   }
 
   void setVideoIndex(int index) {

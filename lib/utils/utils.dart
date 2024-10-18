@@ -22,14 +22,14 @@ class Utils {
     Fluttertoast.showToast(msg: message);
   }
 
-  static flushBarErrorMessage(String messsage, BuildContext context) {
+  static flushBarErrorMessage(String message, BuildContext context) {
     showFlushbar(
         context: context,
         flushbar: Flushbar(
           backgroundColor: Colors.red,
           titleColor: Colors.white,
-          message: messsage,
-          duration: Duration(seconds: 3),
+          message: message,
+          duration: const Duration(seconds: 3),
           forwardAnimationCurve: Curves.ease,
           reverseAnimationCurve: Curves.easeInOut,
           icon: const Icon(

@@ -102,7 +102,31 @@ Widget buildLiveWatchAndListenRow(
       IconButton(
         icon: const Icon(Icons.launch, color: Colors.white),
         onPressed: () {
-          _showWebViewDialog(context, controller);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Colors.black38,
+                title: const Text(
+                  'Radio Player',
+                  style: TextStyle(color: Colors.white),
+                ),
+                content: SizedBox(
+                  width: double.maxFinite,
+                  height: 400, // Adjust height as needed
+                  child: WebViewWidget(controller: controller),
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text('Close'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         },
       ),
     ],
@@ -129,7 +153,7 @@ Widget buildWeatherInfoWithShimmer(WeatherProvider weatherProvider) {
         const SizedBox(height: 8),
         weatherData != null
             ? Text(
-                '${weatherData.main!.temp}°F', // Current temperature
+                '${weatherData.main!.temp!.round()}°F', // Current temperature
                 style: GoogleFonts.lato(
                   fontSize: 70,
                   color: Colors.white,
@@ -139,7 +163,7 @@ Widget buildWeatherInfoWithShimmer(WeatherProvider weatherProvider) {
         const SizedBox(height: 8),
         weatherData != null
             ? Text(
-                'Feels like ${weatherData.main!.feelsLike}°F',
+                'Feels like ${weatherData.main!.feelsLike!.round()}°F',
                 style: GoogleFonts.lato(
                   fontSize: 20,
                   color: Colors.white70,
@@ -213,7 +237,7 @@ Widget _buildDaySection(
               final hourly = hourlyData[index];
               return _buildHourlyForecastCard(
                   hourly.time,
-                  '${hourly.temperature}°F',
+                  '${hourly.temperature.round()}°F',
                   provider.getIconForTemperatureAndTime(
                       hourly.temperature, hourly.time));
             },
@@ -252,7 +276,7 @@ Widget _buildDaySection2(
               final hourly = hourlyData[index];
               return _buildHourlyForecastCard(
                   hourly.time,
-                  '${hourly.temperature}°F',
+                  '${hourly.temperature.round()}°F',
                   provider.getIconForTemperatureAndTime(
                       hourly.temperature, hourly.time));
             },
@@ -604,29 +628,4 @@ Future<String?> _getCityFromLatLng(double lat, double lng) async {
     Fluttertoast.showToast(msg: 'Error converting lat/lng to city');
   }
   return null;
-}
-
-void _showWebViewDialog(
-    BuildContext context, WebViewController webViewController) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Radio Player'),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 400, // Adjust height as needed
-          child: WebViewWidget(controller: webViewController),
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Close'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
 }

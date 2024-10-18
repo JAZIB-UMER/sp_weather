@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!-- Location Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
     <application
 
         android:label="superior_weather"
@@ -33,6 +38,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="flutterEmbedding" android:value="2" />
+
         <meta-data
             android:name="com.mapbox.token"
             android:value="pk.eyJ1Ijoic3VwZXJpb3J3ZWF0aGVyIiwiYSI6ImNtMjNucWx1dDA3bHUycXBzOTFkbnI2dTAifQ.zVW_x1ostoIHrprzrFPEzg" />

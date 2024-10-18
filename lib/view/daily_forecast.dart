@@ -88,14 +88,6 @@ class _DailyForecastState extends State<DailyForecast> {
               ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: AppColors.primaryColor2,
-          onPressed: () => _webViewController.reload(),
-          child: const Icon(
-            Icons.refresh,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }

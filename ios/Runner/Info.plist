@@ -6,6 +6,13 @@
 <string>YOUR_MAPBOX_ACCESS_TOKEN</string>
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>We need your location to show you the map.</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to show your position on the map.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>Your location is required to provide accurate directions.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>Your location is required to provide accurate directions, even in the background.</string>
+
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

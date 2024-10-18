@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:superior_weather/utils/routes/routes.dart';
 import 'package:superior_weather/utils/routes/routes_name.dart';
@@ -8,7 +9,13 @@ import 'package:superior_weather/view_model/services/audio_services.dart';
 import 'package:superior_weather/view_model/weather_view_model.dart';
 
 void main() {
-  runApp(const MyApp());
+  // Lock orientation to portrait mode
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp, // Only allow portrait up orientation
+  ]).then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {

@@ -39,6 +39,7 @@ class MainView extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         elevation: 1.5,
         selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent.withOpacity(0.8),
         currentIndex: bottomNavigationProvider.currentIndex,

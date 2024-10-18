@@ -10,7 +10,7 @@ class WebViewExample extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FlutterMap(
-        options: MapOptions(
+        options: const MapOptions(
           initialCenter: LatLng(51.5, -0.09), // Initial center of the map
           initialZoom: 13.0, // Initial zoom level
         ),
@@ -18,7 +18,7 @@ class WebViewExample extends StatelessWidget {
           TileLayer(
             urlTemplate:
                 "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$accessToken",
-            subdomains: ['a', 'b', 'c'],
+            subdomains: const ['a', 'b', 'c'],
             // You can use different Mapbox styles, like "mapbox/streets-v11"
             fallbackUrl: 'mapbox/streets-v11',
             tileSize: 256,
