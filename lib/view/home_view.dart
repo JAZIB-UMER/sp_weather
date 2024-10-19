@@ -53,7 +53,7 @@ class _HomeViewState extends State<HomeView> {
     int currentHour = DateTime.now().hour;
     backgroundImage = (currentHour >= 6 && currentHour < 18)
         ? 'assets/images/day_background.jpg'
-        : 'assets/images/background_image.png';
+        : 'assets/images/background_image.jpg';
   }
 
   // Common WebView Navigation Delegate
