@@ -39,7 +39,7 @@ class _HomeViewState extends State<HomeView> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(_buildWebViewNavigationDelegate())
       ..loadRequest(Uri.parse(
-          'https://player.twitch.tv/?channel=superiorweather&parent=localhost'));
+          'https://player.twitch.tv/?channel=superiorweather&parent=com.example.superior_weather'));
 
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
